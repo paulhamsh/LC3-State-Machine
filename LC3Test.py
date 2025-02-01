@@ -12,10 +12,11 @@ def run_times(times):
 def check(cond):
     print("Success") if cond else print("Failed")
 
-set_log_level(4)
-
-
 set_log_level(0)
+
+print( "Test:   Extract state table")
+lc.extract_state_table()
+print("-" * 50)
 
 print( "Test:   LDI R2, R1, 0x003")
 lc.cu.regs = [0x0003, 0x3005, 0x03ff, 0x0707, 0x0005, 0x0050, 0x0500, 0x5000]
