@@ -1,10 +1,14 @@
 # LC3 State Machine in Python
 
-This is an implementation of the state machine as described in 
+This is an implementation of the state machine as described in the book **Introduction to Computing Systems: from bits and gates to C/CC++ and beyond** by Patt and Patel.   
+Especially **Appendix C: The Microarchitecture of the LC-3**.
+
+The python implements the state machine as closely to the description as possible.   
+It doesn't include trap instructions, not PSR processing.    
 
 ## Good links
 
-Datapath
+Datapath   
 https://cs2461-2020.github.io/lectures/Datapath.pdf
 
 https://lumetta.web.engr.illinois.edu/120-S19/slide-copies/134-hardwired-control-unit-design.pdf
@@ -14,15 +18,15 @@ https://lumetta.web.engr.illinois.edu/120-S19/slide-copies/131-lc-3-control-sign
 https://lumetta.web.engr.illinois.edu/120-S19/slide-copies/132-lc-3-fetch-control-signals.pdf
 https://lumetta.web.engr.illinois.edu/120-S19/slide-copies/136-patt-and-patel-control-unit.pdf
 
-Example answers
+### Example answers
 https://users.ece.utexas.edu/~patt/13f.306/Exams/f13_final_soln.pdf
 
 
-LC3b
+### LC3b
 
 https://users.ece.utexas.edu/~patt/05f.360N/handouts/360n.appC.pdf
 
-Architecture
+### Architecture
 
 https://www.cs.utexas.edu/~fussell/courses/cs310h/handouts/handouts.shtml
 
