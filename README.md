@@ -1,6 +1,10 @@
 # LC3 State Machine in Python
 
-This is an implementation of the state machine as described in the book **Introduction to Computing Systems: from bits and gates to C/CC++ and beyond** by Patt and Patel.   
+This is an implementation of the state machine as described in the book 
+
+**Introduction to Computing Systems: from bits and gates to C/CC++ and beyond** by Patt and Patel.   
+
+
 Especially **Appendix C: The Microarchitecture of the LC-3**.
 
 The python implements the state machine as closely to the description as possible.   
