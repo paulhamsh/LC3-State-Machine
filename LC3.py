@@ -3,6 +3,8 @@
 # Based on Introduction to Computing Systems: From Bits & Gates to C/C++ & Beyond
 # https://www.mheducation.com/highered/product/Introduction-to-Computing-Systems-From-Bits-and-Gates-to-C-C%2B%2B-and-Beyond-Patt.html
 
+# Does not implement RTI or TRAP instructions
+# INT signal is treated as a NOP (call to state 49 and then to 33)
 
 # Bit string functions
 
@@ -302,7 +304,7 @@ class ControlUnit():
             log(1, "BR NZP PC + offset9")
             log(2, "|BEN|")
             self.COND = COND.BRANCH
-            self.J = 18     # 18 or 22       
+            self.J = 18     # or 22 (+4)    
         elif self.state == 0b0001:
             log(1, "ADD DR, SR1, (SR2 / SEXT[imm5])")
             log(2, "DR <- SR1 + (SR2 / SEXT[imm5])")
@@ -338,7 +340,7 @@ class ControlUnit():
             log(1, "JSR BR / PC + offset11")
             log(2, "| IR[11] |")
             self.COND = COND.ADDRESSING_MODE
-            self.J = 20
+            self.J = 20 # or 21 (+1)
         elif self.state == 0b0101:
             log(1, "AND DR, SR1, (SR2 / SEXT[imm5])")
             log(2, "DR <- SR1 & (SR2 / SEXT[imm5])")
@@ -371,7 +373,7 @@ class ControlUnit():
             self.GATE_MARMUX = True
             self.J = 23
         elif self.state == 0b1000:
-            log(1, "*** RTI NOT IMPLEMENTED ***")
+            log(1, "RTI (NOP)")
             self.J = 18
         elif self.state == 0b1001:
             log(1, "NOT DR, SR")
@@ -413,6 +415,9 @@ class ControlUnit():
             self.PC_MUX = PCMux.ADDER
             self.LD_PC = True
             self.J = 18
+        elif self.state == 0b1101:
+            log(1, "INVALID (NOP)")
+            self.J = 18
         elif self.state == 0b1110:
             log(1, "LEA DR, PC + offset9")
             log(2, "DR <- PC + off9")
@@ -424,18 +429,18 @@ class ControlUnit():
             self.LD_REG = True
             self.J = 18
         elif self.state == 0b1111:
-            log(1, "*** TRAP NOT IMPLEMENTED ***")
+            log(1, "TRAP (NOP)")
             self.J = 18
         elif self.state == 16:
             log(2, "Mem[MAR] <- MDR, wait R")
             self.MIO_EN = True
             self.RW = MemRW.WR
             self.COND = COND.MEMORY_READY            
-            self.J = 16 # same value, to loop until memory ready
+            self.J = 16 # or 18 (+2)
         elif self.state == 17:
             log(2, "|ACV|")            
             self.COND = COND.ACV_TEST
-            self.J = 24 # or 56
+            self.J = 24 # or 56 (+32)
         elif self.state == 18:
             log(2, "MAR <- PC, PC <- PC + 1, set ACV, |INT|")
             log(3, f"PC: 0x{self.PC:4x}")
@@ -445,11 +450,11 @@ class ControlUnit():
             self.PC_MUX = PCMux.PC_PLUS_1
             self.GATE_PC = True
             self.COND = COND.INTERRUPT_TEST
-            self.J = 33
+            self.J = 33 # or 49 (+16)
         elif self.state == 19:
             log(2, "|ACV|")            
             self.COND = COND.ACV_TEST
-            self.J = 29 # or 61
+            self.J = 29 # or 61 (+32)
         elif self.state == 20:
             log(1, "---JSR BR")
             log(2, "R7 <- PC, PC <- BR")
@@ -486,21 +491,21 @@ class ControlUnit():
             self.ALUK = ALUK.PASSA
             self.GATE_ALU = True
             self.COND = COND.ACV_TEST
-            self.J = 16
+            self.J = 16 # or 48 (+32)
         elif self.state == 24:
             log(2, "MDR <- M, wait R")
             self.MIO_EN = True
             self.RW = MemRW.RD
             self.LD_MDR = True
-            self.J = 24 # same value, to loop until memory ready
             self.COND = COND.MEMORY_READY
+            self.J = 24 # or 26 (+2)
         elif self.state == 25:
             log(2, "MDR <- M, wait R")
             self.MIO_EN = True
             self.RW = MemRW.RD
-            self.LD_MDR = True
-            self.J = 25 # same value, to loop until memory ready
             self.COND = COND.MEMORY_READY
+            self.LD_MDR = True
+            self.J = 25 # or 27 (+2)
         elif self.state == 26:
             log(2, "MAR <- MDR, set ACV")
             self.LD_MAR = True        
@@ -519,14 +524,14 @@ class ControlUnit():
             self.MIO_EN = True
             self.RW = MemRW.RD
             self.LD_MDR = True
-            self.J = 28 # same value, to loop until memory ready
             self.COND = COND.MEMORY_READY
+            self.J = 28 # or 30 )+2)
         elif self.state == 29:
             log(2, "MDR <- M, wait R")
             self.MIO_EN = True
             self.RW = MemRW.RD
             self.LD_MDR = True
-            self.J = 29 # same value, to loop until memory ready
+            self.J = 29 # or 31 (+2)
             self.COND = COND.MEMORY_READY
         elif self.state == 30:
             log(2, "IR <- MDR")
@@ -547,11 +552,15 @@ class ControlUnit():
         elif self.state == 33:
             log(2, "|ACV|")
             self.COND = COND.ACV_TEST
-            self.J = 28
+            self.J = 28 # or 60 (+32)
         elif self.state == 35:
             log(2, "|ACV|")
             self.COND = COND.ACV_TEST
-            self.J = 25 # or 57
+            self.J = 25 # or 57 (+32)
+        elif self.state == 49:
+            log(2, "INT (NOP)")
+            self.INT = False
+            self.J = 33
         else:
             log(1, f"MISSING CODE FOR INSTRUCTION {self.state}")
             self.J = 18

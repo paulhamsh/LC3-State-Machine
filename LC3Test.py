@@ -1,7 +1,6 @@
 from LC3 import LC3, set_log_level
 
 lc = LC3()
-set_log_level(4)
 
 def run_times(times):
     lc.cu.PC = 0x3000
@@ -16,6 +15,15 @@ set_log_level(0)
 
 print( "Test:   Extract state table")
 lc.extract_state_table()
+print("-" * 50)
+
+print("Test: Interrupt")
+lc.cu.INT = True 
+lc.mem.memory[0x3000] = 0b0000_0000_0000_0001
+# only 2 instructions to get to INT handler (state 49)
+run_times(2)       
+print(f"Result: got to state {lc.cu.state:d}")
+check(lc.cu.state == 33)
 print("-" * 50)
 
 print( "Test:   LDI R2, R1, 0x003")
@@ -130,7 +138,8 @@ print("-" * 50)
 print("Test:   FETCH and DECODE cycle")
 lc.cu.regs = [0x0003, 0x0030, 0x0300, 0x3000, 0x0005, 0x0050, 0x0500, 0x5000]
 lc.mem.memory[0x3000] = 0b0000_0000_0000_0001
-run_times(7)       # only 7 instructions to get to DECODE
+# only 7 instructions to get to DECODE
+run_times(7)       
 print(f"Result: got to state {lc.cu.state:d}")
 check(lc.cu.state == 0)
 print("-" * 50)
