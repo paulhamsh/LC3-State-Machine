@@ -10,6 +10,105 @@ Especially **Appendix C: The Microarchitecture of the LC-3**.
 The python implements the state machine as closely to the description as possible.   
 It doesn't include trap instructions, not PSR processing.    
 
+## Test program
+
+Used here: https://wchargin.com/lc3web/
+
+```
+.orig x3000
+   ; r0 to have address of mem2
+   lea r0, mem2
+
+   ; set mem3 to point to mem2
+   ; to be
+   ; mem3
+   ;    .fill x3032
+   st  r0, mem3
+
+   ; swap two words at mem1
+   ; so they end up as 
+   ; mem1
+   ;    .fill x4321
+   ;    .fill x1234
+   lea r0, mem1
+   ldr r1, r0, #0
+   ldr r2, r0, #1
+   str r2, r0, #0
+   str r1, r0, #1
+
+   ; put r2 into address 
+   ; stored in mem3 ie mem2
+   ; mem2
+   ;    .fill x4321
+   sti r2, mem3
+
+   ; should load r2 with 
+   ; same value x4321
+   ld  r2, mem2
+
+   ; load r3 with second word at mem1
+   ; x1234
+   ldr r3, r0, #1
+
+   ; skip next instruction
+   br  lbl1
+   and r0, r0, #0
+lbl1
+   lea r4, mem1
+   ; set r5 to 5
+   and r5, r5, #0
+   add r5, r5, #5
+   ; add to r5 then and with x0f
+   ; should become x0009
+   add r3, r3, r5 
+   and r3, r3, x0f
+
+   ; skip next instruction
+   brp lbl2
+   and r0, r0, #0
+lbl2
+   ldi r0, mem3
+   not r4, r0
+lbl3
+   add r3, r3, #-1
+   brp lbl3
+
+   jsr sub1
+   lea r6, sub2
+   jsrr r6
+
+spin
+   br  spin
+
+sub1
+   add r0, r0, #1
+   ret
+
+sub2
+   add r0, r0, #1
+   ret
+
+   ; should end up with registers
+   ; as below
+   ; R0: x4323   R1: x1234
+   ; R2: x4321   R3: x0000
+   ; R4: xBCDE   R5: x0005
+   ; R6: x301D   R7: x301A
+   ; PC: x301a
+
+   ; space for extra instructions
+   .blkw #17
+
+mem1 
+   .fill x1234
+   .fill x4321
+mem2
+   .fill xabcd
+mem3
+   .fill xdcba
+.end
+```
+
 ## Good links
 
 Datapath   
