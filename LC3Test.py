@@ -88,6 +88,16 @@ print(f"Result: 0x{lc.cu.PC:04x} in PC")
 check(lc.cu.PC == 0x3003)
 print("-" * 50)
 
+print( "Test:   BR NZP -1")
+lc.cu.Z = True
+lc.cu.regs = [0x0003, 0x0003, 0x03ff, 0x0707, 0x0005, 0x0050, 0x0500, 0x5000]
+lc.mem.memory[0x3000] = 0b0000_010_1_1111_1111
+run_times(9)
+print(f"Result: 0x{lc.cu.PC:04x} in PC")
+check(lc.cu.PC == 0x3000)
+print("-" * 50)
+
+
 print( "Test:   AND R1, R3, 7")
 lc.cu.regs = [0x0003, 0x0003, 0x03ff, 0x0707, 0x0005, 0x0050, 0x0500, 0x5000]
 lc.mem.memory[0x3000] = 0b0101_001_011_1_00111
@@ -177,5 +187,49 @@ lc.mem.memory[0x3000] = 0b0010_010_1_1111_1100
 run_times(9)
 print(f"Result: {lc.cu.ACV}")
 check(lc.cu.ACV == True)
+print("-" * 50)
+
+
+print( "Test:   test program")
+
+# This part can read the output from https://wchargin.com/lc3web/
+
+"""
+f = open("lc3.bin", "rb")
+mem = list(f.read())
+# LC3 is big endian words
+m2 = [(a << 8) | b for a, b in zip(mem[0::2], mem[1::2])]
+address = m2.pop(0)
+
+"""
+# Or just have the list of words
+address= 0x3000
+m2 = [0xe031, 0x3031, 0xe02d, 0x6200,
+      0x6401, 0x7400, 0x7201, 0xb42b,
+      0x2429, 0x6601, 0x0e01, 0x5020,
+      0xe823, 0x5b60, 0x1b65, 0x16c5,
+      0x56ef, 0x0201, 0x5020, 0xa01f,
+      0x983f, 0x16ff, 0x03fe, 0x4803,
+      0xec04, 0x4180, 0x0fff, 0x1021,
+      0xc1c0, 0x1021, 0xc1c0, 0x0000,
+      0x0000, 0x0000, 0x0000, 0x0000,
+      0x0000, 0x0000, 0x0000, 0x0000,
+      0x0000, 0x0000, 0x0000, 0x0000,
+      0x0000, 0x0000, 0x0000, 0x0000,
+      0x1234, 0x4321, 0xabcd, 0xdcba ]
+
+lc.mem.memory[0x3000:0x3000 + len(m2)] = m2
+
+lc.cu.regs = [0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000]
+expected_regs = [0x4323, 0x1234, 0x4321, 0x0000, 0xbcde, 0x0005, 0x301d, 0x301a]
+run_times(440)
+
+match_regs = 0
+for i in range(8):
+    print(f'R{i} {lc.cu.regs[i]:04x}')
+    if lc.cu.regs[i] == expected_regs[i]:
+        match_regs += 1
+print(f'PC {lc.cu.PC:4x}')
+check(match_regs == 8)
 print("-" * 50)
 

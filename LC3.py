@@ -298,7 +298,8 @@ class ControlUnit():
     def set_control_signals(self):
         # do this manually for now, can implement in a bitmap later
         self.clear_control_signals()
-        log(1, f"State {self.state}")
+        log(2, f"State {self.state}")
+        #log(1, f"{self.PC:04x}")
 
         if   self.state == 0b0000:
             log(1, "BR NZP PC + offset9")
@@ -484,6 +485,7 @@ class ControlUnit():
             self.ADDR2_MUX = ADDR2Mux.PC_OFFSET_9
             self.ADDR1_MUX = ADDR1Mux.PC
             self.PC_MUX = PCMux.ADDER
+            self.GATE_PC = True            
             self.J = 18
         elif self.state == 23:
             log(2, "MDR <- SR, |ACV|")
@@ -617,7 +619,7 @@ class ControlUnit():
         log(4, f"Logic: ADDR1MUX is      0x{self.ADDR1_MUX:04x} ")
         
         # ADDR_ADD
-        self.ADDR_ADD_OUT = self.ADDR1_MUX_OUT + self.ADDR2_MUX_OUT
+        self.ADDR_ADD_OUT = (self.ADDR1_MUX_OUT + self.ADDR2_MUX_OUT) & 0xffff
         log(4, f"Logic: ADDR_ADD_OUT is  0x{self.ADDR_ADD_OUT:04x} ")
         
         # MAR_MUX
@@ -754,7 +756,7 @@ class ControlUnit():
      
         if self.LD_CC:
             self.Z = (self.bus == 0)
-            self.P = (self.bus <= 0x7fff)
+            self.P = (self.bus > 0 and self.bus <= 0x7fff)
             self.N = (self.bus > 0x7fff)
             log(3, f"Loading Z N P {self.Z} {self.N} {self.P} from bus")
 
