@@ -97,7 +97,6 @@ print(f"Result: 0x{lc.cu.PC:04x} in PC")
 check(lc.cu.PC == 0x3000)
 print("-" * 50)
 
-
 print( "Test:   AND R1, R3, 7")
 lc.cu.regs = [0x0003, 0x0003, 0x03ff, 0x0707, 0x0005, 0x0050, 0x0500, 0x5000]
 lc.mem.memory[0x3000] = 0b0101_001_011_1_00111
@@ -124,7 +123,6 @@ print(f"Result: 0x{lc.mem.memory[0x3004]:04x} in [0x3004]")
 check(lc.mem.memory[0x3004] == 0x0050)
 print("-" * 50)
 
-
 print("Test:   STR R2 R3 +3")
 lc.cu.regs = [0x0003, 0x0030, 0x0300, 0x3000, 0x0005, 0x0050, 0x0500, 0x5000]
 lc.mem.memory[0x3000] = 0b0111_101_011_000011
@@ -134,7 +132,6 @@ print(f"Result: 0x{lc.mem.memory[0x3003]:04x} in [0x3003]")
 check(lc.mem.memory[0x3003] == 0x0050)
 print("-" * 50)
 
-
 print("Test:   ST R2 +2")
 lc.cu.regs = [0x0003, 0x0030, 0x0300, 0x3000, 0x0005, 0x0050, 0x0500, 0x5000]
 lc.mem.memory[0x3000] = 0b0011_010_000_0_00010
@@ -143,7 +140,6 @@ run_times(12)
 print(f"Result: 0x{lc.mem.memory[0x3003]:04x} in [0x3003]")
 check(lc.mem.memory[0x3003] == 0x0300)
 print("-" * 50)
-
 
 print("Test:   FETCH and DECODE cycle")
 lc.cu.regs = [0x0003, 0x0030, 0x0300, 0x3000, 0x0005, 0x0050, 0x0500, 0x5000]
@@ -163,7 +159,6 @@ print(f"Result: 0x{lc.cu.regs[3]:04x} in R3")
 check(lc.cu.regs[3] == 0xcfff)
 print("-" * 50)
 
-
 print("Test:   ADD R1, R3, 7")
 lc.cu.regs = [0x0003, 0x0030, 0x0300, 0x3000, 0x0005, 0x0050, 0x0500, 0x5000]
 lc.mem.memory[0x3000] = 0b0001_001_011_1_00111
@@ -171,7 +166,6 @@ run_times(8)
 print(f"Result: 0x{lc.cu.regs[1]:04x} in R2")
 check(lc.cu.regs[1] == 0x3007)
 print("-" * 50)
-
 
 print("Test:   ADD R2, R3, R4")
 lc.cu.regs = [0x0003, 0x0030, 0x0300, 0x3000, 0x0005, 0x0050, 0x0500, 0x5000]
@@ -189,6 +183,23 @@ print(f"Result: {lc.cu.ACV}")
 check(lc.cu.ACV == True)
 print("-" * 50)
 
+print( "Test:   JSRR R1")
+lc.cu.regs = [0x0003, 0x3005, 0x03ff, 0x0707, 0x0005, 0x0050, 0x0500, 0x5000]
+lc.mem.memory[0x3000] = 0b0100_0_00_001_000000
+run_times(9)
+print(f"Result: 0x{lc.cu.PC:04x} in PC")
+check(lc.cu.PC == 0x3005)
+check(lc.cu.regs[7] == 0x3001)
+print("-" * 50)
+
+print( "Test:   JSR 3")
+lc.cu.regs = [0x0003, 0x3005, 0x03ff, 0x0707, 0x0005, 0x0050, 0x0500, 0x5000]
+lc.mem.memory[0x3000] = 0b0100_1_000_0000_0011
+run_times(9)
+print(f"Result: 0x{lc.cu.PC:04x} in PC")
+check(lc.cu.PC == 0x3004)
+check(lc.cu.regs[7] == 0x3001)
+print("-" * 50)
 
 print( "Test:   test program")
 
